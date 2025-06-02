@@ -1,0 +1,30 @@
+# Build stage
+FROM node:20-alpine as builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Development stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy all files from builder
+COPY --from=builder /app ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm install
+
+# Expose development port
+EXPOSE 5173
+
+# Start development server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
