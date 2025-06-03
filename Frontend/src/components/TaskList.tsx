@@ -38,6 +38,14 @@ export default function TaskList({ tasks, onDeleteTask }: TaskListProps) {
     }
   };
 
+  // Helper to highlight similarity
+  const getSimilarityColor = (score: number) => {
+    if (score >= 0.95) return 'text-green-600 font-bold';
+    if (score >= 0.85) return 'text-blue-600 font-semibold';
+    if (score >= 0.7) return 'text-yellow-600 font-medium';
+    return 'text-gray-500';
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {tasks.length === 0 ? (
@@ -49,7 +57,7 @@ export default function TaskList({ tasks, onDeleteTask }: TaskListProps) {
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new task.</p>
         </div>
       ) : (
-        tasks.map((task) => {
+        tasks.map((task: any) => {
           const statusConfig = getStatusConfig(task.status);
           return (
             <div
@@ -57,14 +65,21 @@ export default function TaskList({ tasks, onDeleteTask }: TaskListProps) {
               className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
             >
               <div className="p-6">
-              <div className="flex items-center justify-between mb-4 gap-2">
-
+                <div className="flex items-center justify-between mb-4 gap-2">
                   <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig.color}`}
                   >
                     {statusConfig.icon}
                     {task.status}
                   </span>
+                  {typeof task.similarity === 'number' && (
+                    <span
+                      className={`ml-2 px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-xs ${getSimilarityColor(1 - task.similarity)}`}
+                      title="Similarity score (higher is more similar)"
+                    >
+                      Similarity: {(1 - task.similarity).toFixed(2)}
+                    </span>
+                  )}
                   <button
                     onClick={() => onDeleteTask(task.id)}
                     className="text-gray-400 hover:text-red-500 transition-colors duration-200 focus:outline-none group"

@@ -18,6 +18,15 @@ function App() {
     }
     // Then fetch from server
     fetchTasks();
+
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/serviceWorker.js').catch((err) => {
+          console.log('Service worker registration failed:', err);
+        });
+      });
+    }
   }, []);
 
   const fetchTasks = async () => {
@@ -84,6 +93,20 @@ function App() {
     setSearchResults(null);
   };
 
+  const handleCacheRefresh = async () => {
+    setError(null);
+    setSearchResults(null);
+    try {
+      const apiUrl = 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/tasks`);
+      const data = await response.json();
+      setTasks(data);
+      localStorage.setItem('tasks', JSON.stringify(data));
+    } catch (err) {
+      setError('Failed to refresh cache from server');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="container mx-auto py-8 px-4">
@@ -93,6 +116,15 @@ function App() {
             {error}
           </div>
         )}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleCacheRefresh}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            title="Refresh tasks from server"
+          >
+            Refresh Tasks
+          </button>
+        </div>
         <TaskForm onTaskAdded={handleTaskAdded} />
         <div className="mt-8">
           <TaskSearch onSearchResults={handleSearchResults} />

@@ -35,15 +35,20 @@ self.addEventListener('fetch', (event) => {
             // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
-            }
-
-            // Clone the response because it's a stream that can only be consumed once
+            }            // Clone the response because it's a stream that can only be consumed once
             const responseToCache = response.clone();
 
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+            // Only cache valid schemes (http or https) to avoid chrome-extension error
+            const url = new URL(event.request.url);
+            if (url.protocol === 'http:' || url.protocol === 'https:') {
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                })
+                .catch((err) => {
+                  console.warn('Cache put error:', err);
+                });
+            }
 
             return response;
           })

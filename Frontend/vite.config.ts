@@ -11,7 +11,12 @@ export default defineConfig({
       usePolling: true
     },
     strictPort: true,
-    cors: true
+    cors: true,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173
+    }
   },
   css: {
     devSourcemap: true
