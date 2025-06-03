@@ -1,5 +1,12 @@
 # Task Manager Application
 
+Video Demo : https://www.loom.com/share/fde94e3990c443bdb02052a5024aca2d?sid=5bb8f94b-a20e-4aaa-824d-d5b2ea903004
+
+Screenshot :
+
+![Task Manager Preview](image.png)
+
+
 A full-stack task management application built with React, Node.js, PostgreSQL, and Docker, featuring vector-based semantic search.
 
 ## Features
